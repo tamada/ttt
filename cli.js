@@ -119,9 +119,9 @@ const Cli = class Cli {
     }
 }
 
-new Cli().perform(process.argv.slice(2), (message) => {
-    console.log(message)
-    printHelp()
-})
+// new Cli().perform(process.argv.slice(2), (message) => {
+//     console.log(message)
+//     printHelp()
+// })
 
 module.exports = Cli

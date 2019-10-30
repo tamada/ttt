@@ -1,5 +1,5 @@
 {
-  "name": "ziraffe",
+  "name": "@tamadalab/ziraffe",
   "version": "1.0.0",
   "description": "a checking tool for course graduation requirements on ISE, KSU",
   "main": "cli.js",
@@ -15,8 +15,11 @@
     "ise",
     "ksu"
   ],
-  "author": "Haruaki Tamada",
+  "author": "Haruaki Tamada <tamada@users.noreply.github.com>",
   "license": "WTFPL",
+  "directories": {
+    "bin": "bin"
+  },
   "bugs": {
     "url": "https://github.com/tamada/ziraffe/issues"
   },
