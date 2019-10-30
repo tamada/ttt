@@ -1,0 +1,24 @@
+{
+  "name": "ziraffe",
+  "version": "1.0.0",
+  "description": "a checking tool for course graduation requirements on ISE, KSU",
+  "main": "cli.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tamada/ziraffe.git"
+  },
+  "keywords": [
+    "graduation",
+    "ise",
+    "ksu"
+  ],
+  "author": "Haruaki Tamada",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/tamada/ziraffe/issues"
+  },
+  "homepage": "https://github.com/tamada/ziraffe#readme"
+}
