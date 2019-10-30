@@ -4,7 +4,7 @@
   "description": "a checking tool for course graduation requirements on ISE, KSU",
   "main": "cli.js",
   "scripts": {
-    "test": "test"
+    "test": "jasmine"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,13 @@
   "bugs": {
     "url": "https://github.com/tamada/ziraffe/issues"
   },
-  "homepage": "https://github.com/tamada/ziraffe#readme"
+  "homepage": "https://github.com/tamada/ziraffe#readme",
+  "dependencies": {
+    "edit-distance": "^1.0.2",
+    "hjson": "^3.2.1",
+    "minimist": "^1.2.0"
+  },
+  "devDependencies": {
+    "jasmine": "^3.5.0"
+  }
 }
