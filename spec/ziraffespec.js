@@ -9,3 +9,9 @@ describe('似た講義名を探す', () => {
         expect(1).toBe(array.length)
     })
 })
+
+describe('編集距離を計算する', () => {
+    it('distanceとsimilarity', () => {
+        expect(8).toBe(ziraffe.levenshtein('distance', 'similarity'))
+    })
+})

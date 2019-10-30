@@ -1,27 +1,18 @@
 'use strict'
 
-const insert = (node) => 1
-const remove = (node) => 1
-const update = (string1, string2) => string1 !== string2 ? 1 : 0
-let ed = require('edit-distance')
-
-const levenshtein = (name1, name2, insertFunc, removeFunc, updateFunc) => {
-    const array = [name1.length + 1][name2.length + 1]
-    for (i = 0; i < name1.length; i++) array[i][0] = 1
-    for (j = 0; j < name2.length; j++) array[0][j] = 1
-    for (i = 1; i < name1.length; i++) {
-        for (j = 1; j < name2.length; j++) {
-
-        }
+const createArray = (name1, name2) => {
+    const array = new Array(name1.length + 1)
+    for(let i = 0; i <= name1.length; i++){
+        array[i] = new Array(name2.length + 1).fill(0)
+        array[i][0] = i
     }
-    return array[name1.length][name2.length]
+    for(let j = 0; j <= name2.length; j++) array[0][j] = j
+    return array
 }
 
-const calculateEditDistance = (name1, name2) => {
-    let lev = ed.levenshtein(name1, name2, insert, remove, update)
-    return { name1: name1, name2: name2, distance: lev.distance }
+const findDefaultFunc = (orig, defaultFunc) => {
+    return orig === undefined? defaultFunc: orig
 }
-
 
 const restRequirements = (course, credits) => {
     return course.requirements.filter(item => credits.indexOf(item) < 0)
@@ -88,11 +79,41 @@ module.exports = class Ziraffe {
     }
 
     similarLectures(name) {
-        const array = this.lectures.map(item => calculateEditDistance(item.name, name))
+        const array = this.lectures.map(item => this.calculateEditDistance(item.name, name))
         const array1 = array.filter(item => item.distance <= 1)
         if (array1.length == 0) {
             return array.filter(item => item.distance <= 2)
         }
         return array1
     }
+
+    calculateEditDistance(name1, name2) {
+        const distance = this.levenshtein(name1, name2)
+        return { name1: name1, name2: name2, distance: distance }
+    }
+
+    levenshtein(name1, name2, insertFunc, removeFunc, updateFunc) {
+        const array = createArray(name1, name2)
+        insertFunc = findDefaultFunc(insertFunc, (node) => 1)
+        removeFunc = findDefaultFunc(removeFunc, (node) => 1)
+        updateFunc = findDefaultFunc(updateFunc, (string1, string2) => string1 !== string2? 1: 0)
+        for(let i = 1; i <= name1.length; i++) {
+            for(let j = 1; j <= name2.length; j++) {
+                const d1 = array[i - 1][j] + removeFunc(name1.charAt(i - 1))
+                const d2 = array[i][j - 1] + insertFunc(name2.charAt(j - 1))
+                const d3 = updateFunc(name1.charAt(i - 1), name2.charAt(j - 1))
+                array[i][j] = Math.min(d1, d2, d3)
+            }
+        }
+        for(let i = 0; i <= name1.length; i++) {
+            let line = ""
+            for(let j = 0; j <= name2.length; j++) {
+                let item = "    " + array[i][j]
+                line = line + item.slice(-3)
+            }
+            console.log(line)
+        }
+        return array[name1.length][name2.length]
+    }
+
 }
