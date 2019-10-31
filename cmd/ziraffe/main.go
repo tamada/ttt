@@ -18,7 +18,8 @@ func printResult(result ziraffe.CourseDiplomaResult, opts *options) {
 	fmt.Printf("コース: %s （必修修得状況　%d/%d, %d/%d単位）\n", result.Name,
 		len(result.GotRequirements), len(result.Requirements), result.GotCredit, result.DiplomaCredit)
 	if opts.verboseFlag {
-		fmt.Printf("    未取得必修: %s\n", strings.Join(result.RestRequirements, ", "))
+		fmt.Printf("    修得済の必修: %s\n", strings.Join(result.GotRequirements, ", "))
+		fmt.Printf("    未修得の必修: %s\n", strings.Join(result.RestRequirements, ", "))
 	}
 }
 
@@ -39,6 +40,27 @@ func checkCredits(credits []string, opts *options, z *ziraffe.Ziraffe) error {
 	return printResults(results, opts)
 }
 
+func findLectureNames(lectures []ziraffe.Lecture) string {
+	list := []string{}
+	for _, lec := range lectures {
+		list = append(list, lec.Name)
+	}
+	return strings.Join(list, ", ")
+}
+
+func validateCredits(credits []string, z *ziraffe.Ziraffe) []string {
+	result := []string{}
+	for _, credit := range credits {
+		lectures := z.FindSimilarLectures(credit)
+		if len(lectures) != 0 {
+			fmt.Printf("%s: 科目名が不正です．もしかして，%s\n", credit, findLectureNames(lectures))
+		} else {
+			result = append(result, credit)
+		}
+	}
+	return result
+}
+
 func performEach(fileName string, opts *options, z *ziraffe.Ziraffe) error {
 	bytes, err := ioutil.ReadFile(fileName)
 	if err != nil {
@@ -48,6 +70,7 @@ func performEach(fileName string, opts *options, z *ziraffe.Ziraffe) error {
 	if err := json.Unmarshal(bytes, &credits); err != nil {
 		return err
 	}
+	credits = validateCredits(credits, z)
 	return checkCredits(credits, opts, z)
 }
 
@@ -152,7 +175,7 @@ func parseArgs(args []string) (*options, error) {
 	if err := parseOnErrorString(opts); err != nil {
 		return nil, err
 	}
-	opts.args = flags.Args()
+	opts.args = flags.Args()[1:]
 	return opts, nil
 }
 
