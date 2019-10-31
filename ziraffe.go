@@ -11,7 +11,6 @@ DataStore shows master of lectures and course data.
 type DataStore interface {
 	Lectures() []Lecture
 	Courses() []Course
-	Diploma() Diploma
 	Init() error
 }
 
@@ -35,22 +34,13 @@ type Lecture struct {
 }
 
 /*
-Diploma shows diploma rules.
-*/
-type Diploma struct {
-	/* CourseCredits shows threshold credits for the lectures of a course */
-	CourseCredits   CreditCount `json:"course-credits"`
-	MajorCredits    CreditCount `json:"major-credits"`
-	RequiredCredits CreditCount `json:"required-credits"`
-}
-
-/*
 Course shows requirements and recommended lectures of a course.
 */
 type Course struct {
-	Name         string   `json:"name"`
-	Requirements []string `json:"requirements"`
-	Recommends   []string `json:"recommends"`
+	Name          string      `json:"name"`
+	DiplomaCredit CreditCount `json:"diploma-credit"`
+	Requirements  []string    `json:"requirements"`
+	Recommends    []string    `json:"recommends"`
 }
 
 type distance struct {
@@ -61,17 +51,18 @@ type distance struct {
 type CourseDiplomaResult struct {
 	Name             string
 	Requirements     []string
+	DiplomaCredit    CreditCount
 	GotCredit        CreditCount
 	GotRequirements  []string
 	RestRequirements []string
 }
 
 type Ziraffe struct {
-	ds DataStore
+	Store DataStore
 }
 
 func NewZiraffe(ds DataStore) *Ziraffe {
-	z := Ziraffe{ds: ds}
+	z := Ziraffe{Store: ds}
 	return &z
 }
 
@@ -112,17 +103,21 @@ func (z *Ziraffe) CheckCourse(gotCredits []string, course Course) CourseDiplomaR
 		Name:             course.Name,
 		Requirements:     course.Requirements,
 		GotCredit:        z.countNumberOfCredits(gotCredits, course),
+		DiplomaCredit:    course.DiplomaCredit,
 		GotRequirements:  findRequirements(gotCredits, course.Requirements, func(flag bool) bool { return flag }),
 		RestRequirements: findRequirements(gotCredits, course.Requirements, func(flag bool) bool { return !flag }),
 	}
 }
 
 /*
-FindCourse finds courses from name with partial matching.
+FindCourses finds courses from name with partial matching.
 */
-func (z *Ziraffe) FindCourse(name string) []Course {
+func (z *Ziraffe) FindCourses(name string) []Course {
 	results := []Course{}
-	for _, c := range z.ds.Courses() {
+	if name == "" {
+		return z.Store.Courses()
+	}
+	for _, c := range z.Store.Courses() {
 		if strings.Contains(c.Name, name) {
 			results = append(results, c)
 		}
@@ -131,7 +126,7 @@ func (z *Ziraffe) FindCourse(name string) []Course {
 }
 
 func (z *Ziraffe) FindLecture(name string) *Lecture {
-	for _, lecture := range z.ds.Lectures() {
+	for _, lecture := range z.Store.Lectures() {
 		if lecture.Name == name {
 			return &lecture
 		}
@@ -141,7 +136,7 @@ func (z *Ziraffe) FindLecture(name string) *Lecture {
 
 func (z *Ziraffe) FindSimilarLectures(name string) []Lecture {
 	distances := []distance{}
-	for _, lecture := range z.ds.Lectures() {
+	for _, lecture := range z.Store.Lectures() {
 		distances = append(distances, distance{distance: LevenshteinS(name, lecture.Name), lecture: lecture})
 	}
 	sort.Slice(distances, func(i, j int) bool {

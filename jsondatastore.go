@@ -6,32 +6,27 @@ import (
 )
 
 type JsonDataStore struct {
+	initialized bool
+	courses     []Course
+	lectures    []Lecture
 }
 
-var initialized = false
-var courses = []Course{}
-var lectures = []Lecture{}
-var diploma = Diploma{}
-
 func NewJsonDataStore() DataStore {
-	ds := JsonDataStore{}
+	ds := JsonDataStore{initialized: false, courses: []Course{}, lectures: []Lecture{}}
 	ds.Init()
 	return &ds
 }
 
-func (ds JsonDataStore) Init() error {
-	if !initialized {
-		if err := readJSON(&courses, "data/courses.json"); err != nil {
+func (ds *JsonDataStore) Init() error {
+	if !ds.initialized {
+		if err := readJSON(&ds.courses, "data/courses.json"); err != nil {
 			return err
 		}
-		if err := readJSON(&lectures, "data/lectures.json"); err != nil {
+		if err := readJSON(&ds.lectures, "data/lectures.json"); err != nil {
 			return err
 		}
-		if err := readJSON(&diploma, "data/diploma_rules.json"); err != nil {
-			return err
-		}
+		ds.initialized = true
 	}
-	initialized = true
 	return nil
 }
 
@@ -46,14 +41,10 @@ func readJSON(target interface{}, path string) error {
 	return nil
 }
 
-func (ds JsonDataStore) Diploma() Diploma {
-	return diploma
+func (ds *JsonDataStore) Courses() []Course {
+	return ds.courses
 }
 
-func (ds JsonDataStore) Courses() []Course {
-	return courses
-}
-
-func (ds JsonDataStore) Lectures() []Lecture {
-	return lectures
+func (ds *JsonDataStore) Lectures() []Lecture {
+	return ds.lectures
 }

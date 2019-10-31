@@ -36,7 +36,7 @@ func TestFindCourse(t *testing.T) {
 	}
 
 	for _, td := range testdata {
-		courses := z.FindCourse(td.name)
+		courses := z.FindCourses(td.name)
 		if len(courses) != td.wontCount {
 			t.Errorf("%s: course count did not match, wont %d, got %d", td.name, td.wontCount, len(courses))
 		}
@@ -85,7 +85,7 @@ func TestDiplomaCheck(t *testing.T) {
 	}
 
 	for _, td := range testdata {
-		course := z.FindCourse(td.course)
+		course := z.FindCourses(td.course)
 		if len(course) != 1 {
 			t.Errorf("%s course not found", td.course)
 		}

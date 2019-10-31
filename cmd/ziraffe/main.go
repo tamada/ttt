@@ -11,10 +11,32 @@ import (
 	"github.com/tamada/ziraffe"
 )
 
+/* VERSION represents the version of ziraffe. */
 const VERSION = "1.0.0"
 
-func checkCredits(credits []string, opts *options, z *ziraffe.Ziraffe) error {
+func printResult(result ziraffe.CourseDiplomaResult, opts *options) {
+	fmt.Printf("コース: %s （必修修得状況　%d/%d, %d/%d単位）\n", result.Name,
+		len(result.GotRequirements), len(result.Requirements), result.GotCredit, result.DiplomaCredit)
+	if opts.verboseFlag {
+		fmt.Printf("    未取得必修: %s\n", strings.Join(result.RestRequirements, ", "))
+	}
+}
+
+func printResults(results []ziraffe.CourseDiplomaResult, opts *options) error {
+	for _, result := range results {
+		printResult(result, opts)
+	}
 	return nil
+}
+
+func checkCredits(credits []string, opts *options, z *ziraffe.Ziraffe) error {
+	courses := z.FindCourses(opts.course)
+	results := []ziraffe.CourseDiplomaResult{}
+	for _, course := range courses {
+		result := z.CheckCourse(credits, course)
+		results = append(results, result)
+	}
+	return printResults(results, opts)
 }
 
 func performEach(fileName string, opts *options, z *ziraffe.Ziraffe) error {
@@ -59,6 +81,7 @@ OPTIONS
     -e, --on-error=<TYPE>    エラー時の挙動を設定する．デフォルトは WARN（エラーを表示して続行）．
                              有効値は IGNORE（エラーを無視），WARN，QUIT（エラーを表示して終了）．
     -y, --year=<YEAR>        入学年を指定する．デフォルトは 2018．
+	-v, --verbose            冗長出力モード．デフォルトはOFF．
     -h, --help               このメッセージを表示する．
 ARGUMENTS
     CREDITS.JSON      `, prog, VERSION, prog)
@@ -90,6 +113,7 @@ type options struct {
 	onErrorString string
 	year          int
 	helpFlag      bool
+	verboseFlag   bool
 	onError       ErrorType
 	args          []string
 }
@@ -101,6 +125,7 @@ func buildFlagSet() (*flag.FlagSet, *options) {
 	flags.StringVarP(&opts.course, "course", "c", "", "specifies course name (partial match)")
 	flags.StringVarP(&opts.onErrorString, "on-error", "e", "WARN", "specifies the behavior on error (default: WARN)")
 	flags.IntVarP(&opts.year, "year", "y", 2018, "specifies admission year (default: 2018)")
+	flags.BoolVarP(&opts.verboseFlag, "verbose", "v", false, "verbose mode")
 	flags.BoolVarP(&opts.helpFlag, "help", "h", false, "print this message")
 	return flags, opts
 }
