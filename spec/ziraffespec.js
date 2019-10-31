@@ -12,6 +12,6 @@ describe('似た講義名を探す', () => {
 
 describe('編集距離を計算する', () => {
     it('distanceとsimilarity', () => {
-        expect(8).toBe(ziraffe.levenshtein('distance', 'similarity'))
+        expect(8).toBe(ziraffe.calculateEditDistance('distance', 'similarity').distance)
     })
 })

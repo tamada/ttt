@@ -15,4 +15,6 @@ const initialize = () => {
     }).forEach(item => insertItem(item))
 }
 
-initialize()
+(() => {
+  initialize()
+)

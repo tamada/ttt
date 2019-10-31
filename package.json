@@ -25,7 +25,6 @@
   },
   "homepage": "https://github.com/tamada/ziraffe#readme",
   "dependencies": {
-    "edit-distance": "^1.0.2",
     "hjson": "^3.2.1",
     "minimist": "^1.2.0"
   },
