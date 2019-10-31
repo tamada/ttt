@@ -1,5 +1,4 @@
-{
-    "lectures": [
+[
         { "name": "情報理工学概論", "grade": 1, "credit": 2 },
         { "name": "コンピュータ概論", "grade": 1, "credit": 2 },
         { "name": "基礎プログラミング演習I", "grade": 1, "credit": 2 },
@@ -85,4 +84,3 @@
         { "name": "技術英語", "grade": 4, "credit": 2 },
         { "name": "情報理工学特別研究IIA・IIB", "grade": 4, "credit": 6 }
     ]
-}
