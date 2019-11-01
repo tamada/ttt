@@ -5,20 +5,21 @@
         <meta charset="utf-8"/>
         <title>Ziraffe</title>
         <script type="application/javascript" src="wasm_exec.js"></script>
-        <script>
-            const go = new Go();
-            WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
-                go.run(result.instance);
-            });
-        </script>
         <script type="application/javascript" src="browser.js"></script>
     </head>
-    <body>
+    <body onload="initialize()">
         <h1>Ziraffe: コース修了要件確認</h1>
+        <p>単位を取得した科目にチェックを入れてください．</p>
         <section id="lectures">
             <ul id="lectures-list">
             </ul>
+            <input type="button" onClick="verifyDiploma()" value="修了要件チェック!"></input>
+            <input type="button" onClick="checkAllItems()" value="全てにチェックをいれる"></input>
+            <input type="button" onClick="clearChecks()" value="チェックを外す"></input>
         </section>
-        <input type="button" onClick="print('Hello World')" value="Say Hello!"></input>
+        <section id="result-area">
+            <ul id="result-list">
+            </ul>
+        </section>
     </body>
 </html>

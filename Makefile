@@ -20,8 +20,8 @@ update_version:
 
 update_wasm_json:
 	@sed -e 's/const LECTURES_JSON = .*/const LECTURES_JSON = "$(LECTURES_JSON)"/g' \
-	     -e 's/const COURSES_JSON = .*/const COURSES_JSON = "$(COURSES_JSON)"/g' cmd/wasm/wasmdatastore.go > a
-	@mv a cmd/wasm/wasmdatastore.go
+	     -e 's/const COURSES_JSON = .*/const COURSES_JSON = "$(COURSES_JSON)"/g' standalonedatastore.go > a
+	@mv a standalonedatastore.go
 
 setup: update_version update_wasm_json
 	git submodule update --init
@@ -30,10 +30,10 @@ test: setup
 	$(GO) test -covermode=count -coverprofile=coverage.out $$(go list ./... | grep -v wasm)
 
 build: setup
-	cd cmd/ziraffe    ; go build -o "ziraffe" -v
+	cd cmd/ziraffe    ; $(GO) build -o "../../ziraffe" -v
 
 wasm: setup
-	(cd cmd/wasm ; GOOS=js GOARCH=wasm go build -o main.wasm && cp main.wasm ../../web)
+	(cd cmd/wasm ; GOOS=js GOARCH=wasm $(GO) build -o ../../web/main.wasm)
 
 lint: setup
 	$(GO) vet $$(go list ./... | grep -v vendor)

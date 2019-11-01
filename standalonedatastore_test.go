@@ -2,10 +2,10 @@ package ziraffe
 
 import "testing"
 
-func TestReadDataFromJsonDataStore(t *testing.T) {
-	ds := JsonDataStore{}
-	if err := ds.Init(); err != nil {
-		t.Error(err)
+func TestReadDataOfStandaloneDataStore(t *testing.T) {
+	ds := NewStandaloneDataStore()
+	if ds == nil {
+		t.Error("initialize error")
 	}
 	if len(ds.Courses()) != 11 {
 		t.Errorf("courses size did not match, wont %d, got %d", 11, len(ds.Courses()))
