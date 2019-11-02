@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"syscall/js"
 
-	"github.com/tamada/ziraffe"
+	"github.com/tamada/ttt"
 )
 
 func lectures(this js.Value, args []js.Value) interface{} {
@@ -15,8 +15,8 @@ func courses(this js.Value, args []js.Value) interface{} {
 	return ds.Courses()
 }
 
-var ds ziraffe.DataStore
-var z *ziraffe.Ziraffe
+var ds ttt.DataStore
+var z *ttt.Verifier
 
 func gotStringArrayFromJsValue(value js.Value) []string {
 	results := []string{}
@@ -27,7 +27,7 @@ func gotStringArrayFromJsValue(value js.Value) []string {
 	return results
 }
 
-func convertResultToHTML(r ziraffe.CourseDiplomaResult) string {
+func convertResultToHTML(r ttt.CourseDiplomaResult) string {
 	return fmt.Sprintf(`<li>%s （必修修得状況　%d/%d, %d/%d単位）</li>`,
 		r.Name, len(r.GotRequirements), len(r.Requirements), r.GotCredit, r.DiplomaCredit)
 }
@@ -36,7 +36,7 @@ func checkDiplomaOfCourses(this js.Value, args []js.Value) interface{} {
 	credits := gotStringArrayFromJsValue(args[0])
 	html := ""
 	for _, course := range ds.Courses() {
-		r := z.CheckCourse(credits, course)
+		r := z.Verify(credits, course)
 		html = html + convertResultToHTML(r)
 	}
 	doc := js.Global().Get("document")
@@ -46,12 +46,12 @@ func checkDiplomaOfCourses(this js.Value, args []js.Value) interface{} {
 }
 
 func initDataStore(this js.Value, args []js.Value) interface{} {
-	ds = ziraffe.NewStandaloneDataStore()
-	z = ziraffe.NewZiraffe(ds)
+	ds = ttt.NewStandaloneDataStore()
+	z = ttt.NewVerifier(ds)
 	return ""
 }
 
-func buildHTMLOfLectures(targetGrade ziraffe.Grade) string {
+func buildHTMLOfLectures(targetGrade ttt.Grade) string {
 	resultString := ""
 	for _, lecture := range ds.Lectures() {
 		if lecture.Grade == targetGrade {
@@ -65,7 +65,7 @@ func buildHTMLOfLectures(targetGrade ziraffe.Grade) string {
 func buildHTML(this js.Value, args []js.Value) interface{} {
 	lecturesOfGrades := [4]string{}
 	for i := 0; i < 4; i++ {
-		lecturesOfGrades[i] = buildHTMLOfLectures(ziraffe.Grade(i + 1))
+		lecturesOfGrades[i] = buildHTMLOfLectures(ttt.Grade(i + 1))
 	}
 	doc := js.Global().Get("document")
 	target := doc.Call("getElementById", "lectures-list")

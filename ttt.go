@@ -1,4 +1,4 @@
-package ziraffe
+package ttt
 
 import (
 	"sort"
@@ -20,7 +20,7 @@ Grade means target grades of lectures.
 type Grade int
 
 /*
-Credit means credits of a lectures.
+CreditCount means credits of a lectures.
 */
 type CreditCount int
 
@@ -48,6 +48,9 @@ type distance struct {
 	lecture  Lecture
 }
 
+/*
+CourseDiplomaResult shows the verification result of course diploma.
+*/
 type CourseDiplomaResult struct {
 	Name             string
 	Requirements     []string
@@ -57,12 +60,18 @@ type CourseDiplomaResult struct {
 	RestRequirements []string
 }
 
-type Ziraffe struct {
+/*
+Verifier is for verifying course diploma.
+*/
+type Verifier struct {
 	Store DataStore
 }
 
-func NewZiraffe(ds DataStore) *Ziraffe {
-	z := Ziraffe{Store: ds}
+/*
+NewVerifier creates an object of Verifier.
+*/
+func NewVerifier(ds DataStore) *Verifier {
+	z := Verifier{Store: ds}
 	return &z
 }
 
@@ -75,8 +84,8 @@ func contains(slice []string, item string) bool {
 	return false
 }
 
-func (z *Ziraffe) countNumberOfCredits(gotCredits []string, course Course) CreditCount {
-	var sum CreditCount = 0
+func (z *Verifier) countNumberOfCredits(gotCredits []string, course Course) CreditCount {
+	var sum CreditCount
 	for _, credit := range gotCredits {
 		if contains(course.Requirements, credit) || contains(course.Recommends, credit) {
 			lecture := z.FindLecture(credit)
@@ -98,7 +107,10 @@ func findRequirements(gotCredits []string, requirements []string, includeFunc fu
 	return results
 }
 
-func (z *Ziraffe) CheckCourse(gotCredits []string, course Course) CourseDiplomaResult {
+/*
+Verify verifies the course diploma.
+*/
+func (z *Verifier) Verify(gotCredits []string, course Course) CourseDiplomaResult {
 	return CourseDiplomaResult{
 		Name:             course.Name,
 		Requirements:     course.Requirements,
@@ -112,7 +124,7 @@ func (z *Ziraffe) CheckCourse(gotCredits []string, course Course) CourseDiplomaR
 /*
 FindCourses finds courses from name with partial matching.
 */
-func (z *Ziraffe) FindCourses(name string) []Course {
+func (z *Verifier) FindCourses(name string) []Course {
 	results := []Course{}
 	if name == "" {
 		return z.Store.Courses()
@@ -125,7 +137,10 @@ func (z *Ziraffe) FindCourses(name string) []Course {
 	return results
 }
 
-func (z *Ziraffe) FindLecture(name string) *Lecture {
+/*
+FindLecture finds a lecture from the given name.
+*/
+func (z *Verifier) FindLecture(name string) *Lecture {
 	for _, lecture := range z.Store.Lectures() {
 		if lecture.Name == name {
 			return &lecture
@@ -134,7 +149,11 @@ func (z *Ziraffe) FindLecture(name string) *Lecture {
 	return nil
 }
 
-func (z *Ziraffe) FindSimilarLectures(name string) []Lecture {
+/*
+FindSimilarLectures finds lectures which have similar name with the given name.
+If exact matched name of lecture is exist, this function returns the 0-sized array.
+*/
+func (z *Verifier) FindSimilarLectures(name string) []Lecture {
 	distances := []distance{}
 	for _, lecture := range z.Store.Lectures() {
 		distances = append(distances, distance{distance: LevenshteinS(name, lecture.Name), lecture: lecture})

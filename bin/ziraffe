@@ -1,6 +1,0 @@
-#! /usr/bin/env node
-
-'use strict'
-
-const Cli = require('../cli')
-new Cli().perform(process.argv.slice(2), (message) => {})

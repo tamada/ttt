@@ -1,4 +1,4 @@
-package ziraffe
+package ttt
 
 import "testing"
 

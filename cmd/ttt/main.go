@@ -8,39 +8,42 @@ import (
 	"strings"
 
 	flag "github.com/spf13/pflag"
-	"github.com/tamada/ziraffe"
+	"github.com/tamada/ttt"
 )
 
-/* VERSION represents the version of ziraffe. */
+/*
+VERSION represents the version of ttt.
+*/
 const VERSION = "1.0.0"
 
-func printResult(result ziraffe.CourseDiplomaResult, opts *options) {
-	fmt.Printf("コース: %s （必修修得状況　%d/%d, %d/%d単位）\n", result.Name,
+func printResult(result ttt.CourseDiplomaResult, opts *options) {
+	fmt.Printf("    %s（必修修得状況　%2d/%2d, %2d/%3d単位）\n", result.Name,
 		len(result.GotRequirements), len(result.Requirements), result.GotCredit, result.DiplomaCredit)
 	if opts.verboseFlag {
-		fmt.Printf("    修得済の必修: %s\n", strings.Join(result.GotRequirements, ", "))
-		fmt.Printf("    未修得の必修: %s\n", strings.Join(result.RestRequirements, ", "))
+		fmt.Printf("        修得済の必修: %s\n", strings.Join(result.GotRequirements, ", "))
+		fmt.Printf("        未修得の必修: %s\n", strings.Join(result.RestRequirements, ", "))
 	}
 }
 
-func printResults(results []ziraffe.CourseDiplomaResult, opts *options) error {
+func printResults(results []ttt.CourseDiplomaResult, fileName string, opts *options) error {
+	fmt.Printf("ファイル名 %s\n", fileName)
 	for _, result := range results {
 		printResult(result, opts)
 	}
 	return nil
 }
 
-func checkCredits(credits []string, opts *options, z *ziraffe.Ziraffe) error {
+func checkCredits(credits []string, fileName string, opts *options, z *ttt.Verifier) error {
 	courses := z.FindCourses(opts.course)
-	results := []ziraffe.CourseDiplomaResult{}
+	results := []ttt.CourseDiplomaResult{}
 	for _, course := range courses {
-		result := z.CheckCourse(credits, course)
+		result := z.Verify(credits, course)
 		results = append(results, result)
 	}
-	return printResults(results, opts)
+	return printResults(results, fileName, opts)
 }
 
-func findLectureNames(lectures []ziraffe.Lecture) string {
+func findLectureNames(lectures []ttt.Lecture) string {
 	list := []string{}
 	for _, lec := range lectures {
 		list = append(list, lec.Name)
@@ -48,7 +51,7 @@ func findLectureNames(lectures []ziraffe.Lecture) string {
 	return strings.Join(list, ", ")
 }
 
-func validateCredits(credits []string, z *ziraffe.Ziraffe) []string {
+func validateCredits(credits []string, z *ttt.Verifier) []string {
 	result := []string{}
 	for _, credit := range credits {
 		lectures := z.FindSimilarLectures(credit)
@@ -61,7 +64,7 @@ func validateCredits(credits []string, z *ziraffe.Ziraffe) []string {
 	return result
 }
 
-func performEach(fileName string, opts *options, z *ziraffe.Ziraffe) error {
+func performEach(fileName string, opts *options, z *ttt.Verifier) error {
 	bytes, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return err
@@ -71,7 +74,7 @@ func performEach(fileName string, opts *options, z *ziraffe.Ziraffe) error {
 		return err
 	}
 	credits = validateCredits(credits, z)
-	return checkCredits(credits, opts, z)
+	return checkCredits(credits, fileName, opts, z)
 }
 
 func showError(err error, opts *options) {
@@ -81,8 +84,8 @@ func showError(err error, opts *options) {
 }
 
 func perform(opts *options) int {
-	ds := ziraffe.NewJsonDataStore()
-	z := ziraffe.NewZiraffe(ds)
+	ds := ttt.NewJSONDataStore()
+	z := ttt.NewVerifier(ds)
 	for _, credits := range opts.args {
 		err := performEach(credits, opts, z)
 		if err != nil {
@@ -95,8 +98,8 @@ func perform(opts *options) int {
 	return 0
 }
 
-func printHelp(prog string) {
-	fmt.Printf(`%s vresion %s
+func getHelpMessage(prog string) string {
+	return fmt.Sprintf(`%s バージョン %s
 %s [OPTIONS] <CREDITS.JSON...>
 OPTIONS
     -c, --course=<COURSE>    特定のコースのみの判定を行う．部分一致．
@@ -104,17 +107,23 @@ OPTIONS
     -e, --on-error=<TYPE>    エラー時の挙動を設定する．デフォルトは WARN（エラーを表示して続行）．
                              有効値は IGNORE（エラーを無視），WARN，QUIT（エラーを表示して終了）．
     -y, --year=<YEAR>        入学年を指定する．デフォルトは 2018．
-	-v, --verbose            冗長出力モード．デフォルトはOFF．
+    -v, --verbose            冗長出力モード．デフォルトはOFF．
     -h, --help               このメッセージを表示する．
 ARGUMENTS
-    CREDITS.JSON      `, prog, VERSION, prog)
+    CREDITS.JSON             単位を取得した講義を列挙したJSONファイル．複数指定可能．`, prog, VERSION, prog)
 }
 
+/*
+ErrorType shows error types.
+*/
 type ErrorType int
 
+/* IGNORE is the one of ErrorType, it ignore errors. */
 const (
 	IGNORE ErrorType = iota
+	/* WARN is the one of ErrorType, it warn errors and perform the process. */
 	WARN
+	/* QUIT is the one of ErrorType, it warn errors and exit process. */
 	QUIT
 )
 
@@ -143,8 +152,8 @@ type options struct {
 
 func buildFlagSet() (*flag.FlagSet, *options) {
 	opts := new(options)
-	flags := flag.NewFlagSet("ziraffe", flag.ContinueOnError)
-	flags.Usage = func() { printHelp("ziraffe") }
+	flags := flag.NewFlagSet("ttt", flag.ContinueOnError)
+	flags.Usage = func() { fmt.Println(getHelpMessage("ttt")) }
 	flags.StringVarP(&opts.course, "course", "c", "", "specifies course name (partial match)")
 	flags.StringVarP(&opts.onErrorString, "on-error", "e", "WARN", "specifies the behavior on error (default: WARN)")
 	flags.IntVarP(&opts.year, "year", "y", 2018, "specifies admission year (default: 2018)")
@@ -176,11 +185,18 @@ func parseArgs(args []string) (*options, error) {
 		return nil, err
 	}
 	opts.args = flags.Args()[1:]
+	if len(opts.args) == 0 {
+		return opts, fmt.Errorf("CREDITS.JSON が指定されていません．")
+	}
 	return opts, nil
 }
 
 func goMain(args []string) int {
 	opts, err := parseArgs(args)
+	if opts != nil && opts.helpFlag {
+		fmt.Println(getHelpMessage(`ttt`))
+		return 0
+	}
 	if err != nil {
 		fmt.Println(err.Error())
 		return 1

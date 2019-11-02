@@ -1,11 +1,11 @@
-package ziraffe
+package ttt
 
 import (
 	"testing"
 )
 
-var ds = NewJsonDataStore()
-var z = NewZiraffe(ds)
+var ds = NewJSONDataStore()
+var z = NewVerifier(ds)
 
 func TestSimilarLectures(t *testing.T) {
 	testdata := []struct {
@@ -89,7 +89,7 @@ func TestDiplomaCheck(t *testing.T) {
 		if len(course) != 1 {
 			t.Errorf("%s course not found", td.course)
 		}
-		result := z.CheckCourse(td.gotNames, course[0])
+		result := z.Verify(td.gotNames, course[0])
 		if result.Name != td.course {
 			t.Errorf("course name did not match, wont %s, got %s", td.course, result.Name)
 		}

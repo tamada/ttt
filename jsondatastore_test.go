@@ -1,9 +1,9 @@
-package ziraffe
+package ttt
 
 import "testing"
 
 func TestReadDataFromJsonDataStore(t *testing.T) {
-	ds := JsonDataStore{}
+	ds := JSONDataStore{}
 	if err := ds.Init(); err != nil {
 		t.Error(err)
 	}
