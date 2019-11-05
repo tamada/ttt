@@ -5,7 +5,7 @@ go:
 env:
   global:
       - GO111MODULE=on
-      - secure: 
+      - secure: "Y+9KAVr5bLHwfCP56vqZ3Djpe39ShG7SwbVZLohVJrz664maLRd6hnB22Xyk7c41oEB18QRS71beINGTyzTjUcybh/Kq+FhKlPM9KCVXYOPqEHv0O6zYGqi+ykNb/+SkfxRLjhQegaez8fYCKj1vvERSp9Bti81byoHKxeCijIF9x1X4nTmGpve84kbFO6PBTK4LwQxszGcWBEd1w8Y+DH2IR0Razgwo/34Zb5kr2AtcvZoGig5OjzXXEyvs0gPc+FJp6AeXUZ3Hh+hicjBBMUyFDmHV4aErbxvDlcDQmajt9947twPH5hFrUUjowhFg4D+rPiPKD1oPJrzSUcDP4jaCHwmAArmB5QkiJfydshipR+ihIbCcq8sxfLM19mY3V7Wpr1saed4K919Jwt0pQ1JWXEIoheBNl9+gKKVvN1aT9N5sm0Toy4rcZYIOmwRvVeTuL6CXwTgaEb8nT9p12MsGK3eTYtmf30ocDwrf2XPhrENjyZ2uqE/I/qrR6O+Q4m64vM0PndHGaoeo+ZfiMg1oSaqRgCTmlYTkUkGSjM89366RuQxoYKqh/1Q1oO3CXBhU0yAxTIxAlvcEbKGHYbQmXYoc7T0IAH8caKMlAuxQOTFUbabHS2/cCCmnVEvCJP3yOBdwtHrtPyPjJMC/pu2XlcgJvVDeOKphPnaLNZs="
 
 before_script:
     - go get github.com/mattn/goveralls
