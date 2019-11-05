@@ -1,4 +1,8 @@
-.node-version
+www
+*.wasm
+ttt
+coverage.out
+
 ### https://raw.github.com/github/gitignore/2644536a24f37d3906c7ea56e57f6965b1e21f36/Node.gitignore
 
 # Logs

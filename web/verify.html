@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+    <head>
+        <meta charset="utf-8"/>
+        <title>ttt</title>
+        <script type="application/javascript" src="wasm_exec.js"></script>
+        <script type="application/javascript" src="browser.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css"></link>
+        <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+    </head>
+    <body onload="initialize()">
+        <header>
+            <h1>ttt: コース修了確認プログラム</h1>
+            <p>
+                <a href="https://github.com/tamada/ttt" class="badge project"><span class="fab fa-github label"> GitHub</span><span class="fa value">ttt</span></a>
+            </p>
+            <p>
+                単位を取得した科目にチェックを入れてください．
+                チェックを付ける・外す度に LocalStorageに保存されます．
+            </p>
+            <p>
+                バグを発見したら，<a href="https://github.com/tamada/ttt/issues">こちらから報告</a>してもらえるとありがたいです．
+                ただしこの文言は，正しい結果を返すための努力を示すものであって，正しい結果を保証するものではありません．
+                この実行結果を用いた事による不利益は，いかなる場合であっても保証しません．
+            </p>
+        </header>
+        <section id="lectures">
+            <input type="button" onClick="verifyDiploma()" value="修了要件チェックする"></input>
+            <input type="button" onClick="checkAllItems()" value="全てにチェックをいれる"></input>
+            <input type="button" onClick="clearChecks()" value="チェックを外す"></input>
+            <input type="button" onClick="downloadCreditsJSON()" value="CREDITS.JSONをダウンロードする"></input>
+            <ul id="lectures-list">
+            </ul>
+            <input type="button" onClick="verifyDiploma()" value="修了要件チェックする"></input>
+            <input type="button" onClick="checkAllItems()" value="全てにチェックをいれる"></input>
+            <input type="button" onClick="clearChecks()" value="チェックを外す"></input>
+            <input type="button" onClick="downloadCreditsJSON()" value="CREDITS.JSONをダウンロードする"></input>
+        </section>
+        <section id="result-area">
+            <h2>結果表示</h2>
+            <ul id="result-list">
+            </ul>
+        </section>
+        <footer>
+            <h2>ブラウザ対応状況</h2>
+            <ul>
+                <li><span class="fab fa-safari"> Safari</span> <span class="fa fa-dizzy">未対応</span></li>
+                <li><span class="fab fa-chrome"> Google Chrome</span> <span class="fa fa-grin">対応済み</span></li>
+                <li><span class="fab fa-firefox"> Firefox</span> <span class="fa fa-grin-tongue">おそらく対応済み</span></li>
+                <li><span class="fab fa-edge"> Edge</span> <span class="fa fa-grin-tongue">おそらく対応済み</span></li>
+            </ul>
+        </footer>
+    </body>
+</html>
