@@ -26,10 +26,10 @@ update_wasm_json:
 setup: update_version update_wasm_json
 	git submodule update --init
 
-test: lint setup
+test: build setup
 	$(GO) test -covermode=count -coverprofile=coverage.out $$(go list ./... | grep -v wasm)
 
-build: lint setup
+build: setup
 	cd cmd/$(NAME) ; $(GO) build -o "../../$(NAME)" -v
 
 wasm: setup
