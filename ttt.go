@@ -61,17 +61,17 @@ type CourseDiplomaResult struct {
 }
 
 /*
-Verifier is for verifying course diploma.
+Checker is for checking course diploma.
 */
-type Verifier struct {
+type Checker struct {
 	Store DataStore
 }
 
 /*
-NewVerifier creates an object of Verifier.
+NewChecker creates an object of Verifier.
 */
-func NewVerifier(ds DataStore) *Verifier {
-	z := Verifier{Store: ds}
+func NewChecker(ds DataStore) *Checker {
+	z := Checker{Store: ds}
 	return &z
 }
 
@@ -84,7 +84,7 @@ func contains(slice []string, item string) bool {
 	return false
 }
 
-func (z *Verifier) findCreditOfLecture(name string) CreditCount {
+func (z *Checker) findCreditOfLecture(name string) CreditCount {
 	lecture := z.FindLecture(name)
 	if lecture == nil {
 		return 0
@@ -92,7 +92,7 @@ func (z *Verifier) findCreditOfLecture(name string) CreditCount {
 	return lecture.Credit
 }
 
-func (z *Verifier) countNumberOfCredits(gotCredits []string, course Course) CreditCount {
+func (z *Checker) countNumberOfCredits(gotCredits []string, course Course) CreditCount {
 	var sum CreditCount
 	for _, credit := range gotCredits {
 		if contains(course.Requirements, credit) || contains(course.Recommends, credit) {
@@ -113,9 +113,9 @@ func findRequirements(gotCredits []string, requirements []string, includeFunc fu
 }
 
 /*
-Verify verifies the course diploma.
+Check verifies the course diploma.
 */
-func (z *Verifier) Verify(gotCredits []string, course Course) CourseDiplomaResult {
+func (z *Checker) Check(gotCredits []string, course Course) CourseDiplomaResult {
 	return CourseDiplomaResult{
 		Name:             course.Name,
 		Requirements:     course.Requirements,
@@ -129,7 +129,7 @@ func (z *Verifier) Verify(gotCredits []string, course Course) CourseDiplomaResul
 /*
 FindCourses finds courses from name with partial matching.
 */
-func (z *Verifier) FindCourses(name string) []Course {
+func (z *Checker) FindCourses(name string) []Course {
 	results := []Course{}
 	if name == "" {
 		return z.Store.Courses()
@@ -145,7 +145,7 @@ func (z *Verifier) FindCourses(name string) []Course {
 /*
 FindLecture finds a lecture from the given name.
 */
-func (z *Verifier) FindLecture(name string) *Lecture {
+func (z *Checker) FindLecture(name string) *Lecture {
 	for _, lecture := range z.Store.Lectures() {
 		if lecture.Name == name {
 			return &lecture
@@ -154,7 +154,7 @@ func (z *Verifier) FindLecture(name string) *Lecture {
 	return nil
 }
 
-func createDistances(name string, z *Verifier) []distance {
+func createDistances(name string, z *Checker) []distance {
 	distances := []distance{}
 	for _, lecture := range z.Store.Lectures() {
 		distances = append(distances, distance{distance: LevenshteinS(name, lecture.Name), lecture: lecture})
@@ -172,7 +172,7 @@ func sortDistances(distances []distance) {
 FindSimilarLectures finds lectures which have similar name with the given name.
 If exact matched name of lecture is exist, this function returns the 0-sized array.
 */
-func (z *Verifier) FindSimilarLectures(name string) []Lecture {
+func (z *Checker) FindSimilarLectures(name string) []Lecture {
 	distances := createDistances(name, z)
 	sortDistances(distances)
 	min := distances[0].distance

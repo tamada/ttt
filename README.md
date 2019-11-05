@@ -55,7 +55,7 @@ ARGUMENTS
 
 ### Web上での実行
 
-[Webページ](https://tamada.github.io/ttt/verify.html)から，Web上で判定できます．
+[Webページ](https://tamada.github.io/ttt/checker.html)から，Web上で判定できます．
 
 ## 判定方法
 

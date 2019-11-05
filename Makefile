@@ -38,6 +38,7 @@ wasm: setup
 lint: setup
 	$(GO) vet $$(go list ./... | grep -v wasm)
 	golint cmd/ttt cmd/wasm .
+	gosimple 
 
 dist: build
 	mkdir -p $(DIST)

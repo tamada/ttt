@@ -33,11 +33,11 @@ func printResults(results []ttt.CourseDiplomaResult, fileName string, opts *opti
 	return nil
 }
 
-func (opts *options) checkCredits(credits []string, fileName string, z *ttt.Verifier) error {
+func (opts *options) checkCredits(credits []string, fileName string, z *ttt.Checker) error {
 	courses := z.FindCourses(opts.course)
 	results := []ttt.CourseDiplomaResult{}
 	for _, course := range courses {
-		result := z.Verify(credits, course)
+		result := z.Check(credits, course)
 		results = append(results, result)
 	}
 	return printResults(results, fileName, opts)
@@ -51,7 +51,7 @@ func findLectureNames(lectures []ttt.Lecture) string {
 	return strings.Join(list, ", ")
 }
 
-func validateCredits(credits []string, z *ttt.Verifier) []string {
+func validateCredits(credits []string, z *ttt.Checker) []string {
 	result := []string{}
 	for _, credit := range credits {
 		lectures := z.FindSimilarLectures(credit)
@@ -64,7 +64,7 @@ func validateCredits(credits []string, z *ttt.Verifier) []string {
 	return result
 }
 
-func (opts *options) performEach(fileName string, z *ttt.Verifier) error {
+func (opts *options) performEach(fileName string, z *ttt.Checker) error {
 	bytes, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return err
@@ -85,7 +85,7 @@ func (opts *options) showError(err error) {
 
 func (opts *options) perform() int {
 	ds := ttt.NewJSONDataStore()
-	z := ttt.NewVerifier(ds)
+	z := ttt.NewChecker(ds)
 	for _, credits := range opts.args {
 		err := opts.performEach(credits, z)
 		if err != nil {

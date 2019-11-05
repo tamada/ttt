@@ -43,7 +43,7 @@ const checkAllItems = () => {
     localStorage.setItem(KEY_OF_LOCAL_STORAGE, array)
 }
 
-const clearChecks = () => {
+const clearCheckboxs = () => {
     const elements = document.getElementsByTagName('input')
     Array.prototype.forEach.call(elements, inputItem => {
         inputItem.checked = false
@@ -66,7 +66,7 @@ const storeChecksToLocalStorage = (credits) => {
     localStorage.setItem(KEY_OF_LOCAL_STORAGE, credits)
 }
 
-const verifyDiploma = () => {
+const runCheckDiploma = () => {
     const credits = findGotCredits()
     storeChecksToLocalStorage(credits)
     checkDiplomaOfCourses(credits)
