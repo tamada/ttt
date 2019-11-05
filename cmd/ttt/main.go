@@ -33,7 +33,7 @@ func printResults(results []ttt.CourseDiplomaResult, fileName string, opts *opti
 	return nil
 }
 
-func checkCredits(credits []string, fileName string, opts *options, z *ttt.Verifier) error {
+func (opts *options) checkCredits(credits []string, fileName string, z *ttt.Verifier) error {
 	courses := z.FindCourses(opts.course)
 	results := []ttt.CourseDiplomaResult{}
 	for _, course := range courses {
@@ -64,7 +64,7 @@ func validateCredits(credits []string, z *ttt.Verifier) []string {
 	return result
 }
 
-func performEach(fileName string, opts *options, z *ttt.Verifier) error {
+func (opts *options) performEach(fileName string, z *ttt.Verifier) error {
 	bytes, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return err
@@ -74,22 +74,22 @@ func performEach(fileName string, opts *options, z *ttt.Verifier) error {
 		return err
 	}
 	credits = validateCredits(credits, z)
-	return checkCredits(credits, fileName, opts, z)
+	return opts.checkCredits(credits, fileName, z)
 }
 
-func showError(err error, opts *options) {
+func (opts *options) showError(err error) {
 	if opts.onError == WARN || opts.onError == QUIT {
 		fmt.Println(err.Error())
 	}
 }
 
-func perform(opts *options) int {
+func (opts *options) perform() int {
 	ds := ttt.NewJSONDataStore()
 	z := ttt.NewVerifier(ds)
 	for _, credits := range opts.args {
-		err := performEach(credits, opts, z)
+		err := opts.performEach(credits, z)
 		if err != nil {
-			showError(err, opts)
+			opts.showError(err)
 			if opts.onError == QUIT {
 				return 1
 			}
@@ -164,13 +164,14 @@ func buildFlagSet() (*flag.FlagSet, *options) {
 
 func parseOnErrorString(opts *options) error {
 	one := strings.ToLower(opts.onErrorString)
-	if one == "warn" {
+	switch one {
+	case "warn":
 		opts.onError = WARN
-	} else if one == "ignore" {
+	case "ignore":
 		opts.onError = IGNORE
-	} else if one == "quit" {
+	case "quit":
 		opts.onError = QUIT
-	} else {
+	default:
 		return fmt.Errorf("%s: 未知のエラー時の挙動です", opts.onErrorString)
 	}
 	return nil
@@ -201,7 +202,7 @@ func goMain(args []string) int {
 		fmt.Println(err.Error())
 		return 1
 	}
-	return perform(opts)
+	return opts.perform()
 }
 
 func main() {

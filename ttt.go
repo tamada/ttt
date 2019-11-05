@@ -84,14 +84,19 @@ func contains(slice []string, item string) bool {
 	return false
 }
 
+func (z *Verifier) findCreditOfLecture(name string) CreditCount {
+	lecture := z.FindLecture(name)
+	if lecture == nil {
+		return 0
+	}
+	return lecture.Credit
+}
+
 func (z *Verifier) countNumberOfCredits(gotCredits []string, course Course) CreditCount {
 	var sum CreditCount
 	for _, credit := range gotCredits {
 		if contains(course.Requirements, credit) || contains(course.Recommends, credit) {
-			lecture := z.FindLecture(credit)
-			if lecture != nil {
-				sum += lecture.Credit
-			}
+			sum += z.findCreditOfLecture(credit)
 		}
 	}
 	return sum
@@ -149,23 +154,36 @@ func (z *Verifier) FindLecture(name string) *Lecture {
 	return nil
 }
 
+func createDistances(name string, z *Verifier) []distance {
+	distances := []distance{}
+	for _, lecture := range z.Store.Lectures() {
+		distances = append(distances, distance{distance: LevenshteinS(name, lecture.Name), lecture: lecture})
+	}
+	return distances
+}
+
+func sortDistances(distances []distance) {
+	sort.Slice(distances, func(i, j int) bool {
+		return distances[i].distance < distances[j].distance
+	})
+}
+
 /*
 FindSimilarLectures finds lectures which have similar name with the given name.
 If exact matched name of lecture is exist, this function returns the 0-sized array.
 */
 func (z *Verifier) FindSimilarLectures(name string) []Lecture {
-	distances := []distance{}
-	for _, lecture := range z.Store.Lectures() {
-		distances = append(distances, distance{distance: LevenshteinS(name, lecture.Name), lecture: lecture})
-	}
-	sort.Slice(distances, func(i, j int) bool {
-		return distances[i].distance < distances[j].distance
-	})
+	distances := createDistances(name, z)
+	sortDistances(distances)
 	min := distances[0].distance
-	results := []Lecture{}
 	if min == 0 {
-		return results
+		return []Lecture{}
 	}
+	return findLecturesWithMinimumDistance(min, distances)
+}
+
+func findLecturesWithMinimumDistance(min int, distances []distance) []Lecture {
+	results := []Lecture{}
 	for _, d := range distances {
 		if d.distance == min {
 			results = append(results, d.lecture)
