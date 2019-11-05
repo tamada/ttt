@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/tamada/ttt.svg?branch=master)](https://travis-ci.com/tamada/ttt)
+[![codebeat badge](https://codebeat.co/badges/f83e54cf-f7fb-4c52-839f-2f51c9c3e363)](https://codebeat.co/projects/github-com-tamada-ttt-master)
 [![License](https://img.shields.io/badge/License-WTFPL-blue.svg)](https://github.com/tamada/ttt/blob/master/LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.0.0-yellowgreen.svg)](https://github.com/tamada/ttt/releases/tag/v1.0.0)
 

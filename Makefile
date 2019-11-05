@@ -3,8 +3,7 @@ NAME := ttt
 VERSION := 1.0.0
 DIST := $(NAME)-$(VERSION)
 REVISION := $(shell git rev-parse --short HEAD)
-LDFLAGS := -X 'main.version=$(VERSION)'
-	-X 'main.revision=$(REVISION)'
+LDFLAGS := -X 'main.version=$(VERSION)' -X 'main.revision=$(REVISION)'
 LECTURES_JSON := $(shell cat data/lectures.json | tr -d ' \n' | sed 's/"/\\\\"/g')
 COURSES_JSON := $(shell cat data/courses.json | tr -d ' \n' | sed 's/"/\\\\"/g')
 
