@@ -1,5 +1,4 @@
 www
-*.wasm
 ttt
 coverage.out
 

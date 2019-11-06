@@ -33,7 +33,7 @@ build: setup
 	cd cmd/$(NAME) ; $(GO) build -o "../../$(NAME)" -v
 
 wasm: setup
-	(cd cmd/wasm ; GOOS=js GOARCH=wasm $(GO) build -o ../../web/main.wasm)
+	(cd cmd/wasm ; GOOS=js GOARCH=wasm $(GO) build -o ../../docs/main.wasm)
 
 lint: setup
 	$(GO) vet $$(go list ./... | grep -v wasm)
@@ -60,4 +60,4 @@ install: test build
 
 clean:
 	$(GO) clean
-	rm -rf $(NAME) web/main.wasm coverage.out $(DIST) $(DIST).zip
+	rm -rf $(NAME) web/main.wasm coverage.out dist
