@@ -38,12 +38,22 @@ wasm: setup
 lint: setup
 	$(GO) vet $$(go list ./... | grep -v wasm)
 	golint cmd/ttt cmd/wasm .
-	gosimple 
+
+# refer from https://pod.hatenablog.com/entry/2017/06/13/150342
+define _createDist
+	mkdir -p dist/$(1)_$(2)/$(DIST)
+	GOOS=$1 GOARCH=$2 go build -o dist/$(1)_$(2)/$(DIST)/$(NAME) cmd/$(NAME)/main.go
+	cp -r data README.md LICENSE dist/$(1)_$(2)/$(DIST)
+	tar cfz dist/$(DIST)_$(1)_$(2).tar.gz -C dist/$(1)_$(2) $(DIST)
+endef
 
 dist: build
-	mkdir -p $(DIST)
-	cp -r $(NAME) README.md LICENSE data $(DIST)
-	zip -r $(DIST).zip $(DIST)/*
+	@$(call _createDist,darwin,amd64)
+	@$(call _createDist,darwin,386)
+	@$(call _createDist,windows,amd64)
+	@$(call _createDist,windows,386)
+	@$(call _createDist,linux,amd64)
+	@$(call _createDist,linux,386)
 
 install: test build
 	$(GO) install $(LDFLAGS)
