@@ -16,7 +16,7 @@ func courses(this js.Value, args []js.Value) interface{} {
 }
 
 var ds ttt.DataStore
-var z *ttt.Verifier
+var z *ttt.Checker
 
 func gotStringArrayFromJsValue(value js.Value) []string {
 	results := []string{}
@@ -36,7 +36,7 @@ func checkDiplomaOfCourses(this js.Value, args []js.Value) interface{} {
 	credits := gotStringArrayFromJsValue(args[0])
 	html := ""
 	for _, course := range ds.Courses() {
-		r := z.Verify(credits, course)
+		r := z.Check(credits, course)
 		html = html + convertResultToHTML(r)
 	}
 	doc := js.Global().Get("document")
@@ -47,7 +47,7 @@ func checkDiplomaOfCourses(this js.Value, args []js.Value) interface{} {
 
 func initDataStore(this js.Value, args []js.Value) interface{} {
 	ds = ttt.NewStandaloneDataStore()
-	z = ttt.NewVerifier(ds)
+	z = ttt.NewChecker(ds)
 	return ""
 }
 

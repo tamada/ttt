@@ -2,14 +2,16 @@
 
 const KEY_OF_LOCAL_STORAGE = 'checksOfGotCredits'
 
+const checkLectureName = (name) => {
+    const elements = document.getElementsByTagName('input')
+    Array.prototype.filter.call(elements, inputItem => inputItem.value === item)
+        .forEach(inputItem => inputItem.checked = true)
+}
+
 const loadChecksFromLocalStorage = () => {
     const gotCredits = localStorage.getItem(KEY_OF_LOCAL_STORAGE)
     if (gotCredits != null) {
-        gotCredits.split(",").forEach(item => {
-            const elements = document.getElementsByTagName('input')
-            Array.prototype.filter.call(elements, inputItem => inputItem.value === item)
-                .forEach(inputItem => inputItem.checked = true)
-        })
+        gotCredits.split(",").forEach(item => checkLectureName(item))
     }
 }
 
@@ -41,7 +43,7 @@ const checkAllItems = () => {
     localStorage.setItem(KEY_OF_LOCAL_STORAGE, array)
 }
 
-const clearChecks = () => {
+const clearCheckboxs = () => {
     const elements = document.getElementsByTagName('input')
     Array.prototype.forEach.call(elements, inputItem => {
         inputItem.checked = false
@@ -64,7 +66,7 @@ const storeChecksToLocalStorage = (credits) => {
     localStorage.setItem(KEY_OF_LOCAL_STORAGE, credits)
 }
 
-const verifyDiploma = () => {
+const runCheckDiploma = () => {
     const credits = findGotCredits()
     storeChecksToLocalStorage(credits)
     checkDiplomaOfCourses(credits)
