@@ -25,17 +25,16 @@ func NewStandaloneDataStore() *StandaloneDataStore {
 }
 
 func (ds *StandaloneDataStore) initImpl() error {
-	if err := loadJSON(CoursesJSON, &ds.courses); err != nil {
-		return err
-	}
-	if err := loadJSON(LecturesJSON, &ds.lectures); err != nil {
-		return err
-	}
+	loadJSON(CoursesJSON, &ds.courses)
+	loadJSON(LecturesJSON, &ds.lectures)
 	return nil
 }
 
 func loadJSON(jsonString string, target interface{}) error {
-	return json.Unmarshal([]byte(jsonString), target)
+	if err := json.Unmarshal([]byte(jsonString), target); err != nil {
+		return err
+	}
+	return nil
 }
 
 /*

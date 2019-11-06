@@ -38,19 +38,20 @@ func LevenshteinS(s1, s2 string) int {
 	return Levenshtein(s1, s2, new(DefaultCostCalculator))
 }
 
-func findDefaultFuncIfOriginIsNil(origin, defaultFunc func(c1, c2 rune) int) func(c1, c2 rune) int {
-	if origin == nil {
-		return defaultFunc
-	}
-	return origin
-}
-
+/*
+CostCalculator has three function in order to calculate cost for edit distance.
+*/
 type CostCalculator interface {
 	insertFunc(c1, c2 rune) int
 	removeFunc(c1, c2 rune) int
 	updateFunc(c1, c2 rune) int
 }
 
+/*
+DefaultCostCalculator is a default instance of CostCalculator.
+insertFunc and removeFunc always return 1,
+and updateFunc return 1 if given two runes were different, otherwise 0.
+*/
 type DefaultCostCalculator struct {
 }
 
