@@ -57,6 +57,13 @@ ARGUMENTS
 
 [Webページ](https://tamada.github.io/ttt/checker.html)から，Web上で判定できます．
 
+#### ブラウザ対応状況
+
+* Safari 未対応 :worried:
+* Google Chrome OK :smile:
+* Edge たぶんOK :simple_smile:
+* Firefox たぶんOK :simple_smile:
+
 ### Docker を使った実行
 
 ```sh
